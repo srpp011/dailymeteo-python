@@ -7,7 +7,8 @@ import pandas as pd
 
 from ._http import USER_AGENT, DailyMeteoError, session
 
-API_URL = "https://api.dailymeteo.com/meteo/pq/"
+API_URL = "https://api.dailymeteo.com/meteo/v2/pq/"
+NODATA = -999.9  # returned for locations without data (e.g. sea)
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 
 VARS = ("tmean", "tmax", "tmin", "prcp")
@@ -38,7 +39,7 @@ def _batches(times: list[str]) -> Iterable[list[str]]:
 def get_meteo(
     lat: float,
     lon: float,
-    api_key: str,
+    api_key: str | None = None,
     var: str = "tmean",
     agg_level: str = "agg",
     time_scale: str = "day",
@@ -53,7 +54,9 @@ def get_meteo(
     lat, lon
         Location in WGS84 (EPSG:4326).
     api_key
-        API key from the DailyMeteo portal (https://app.dailymeteo.com/).
+        API key from the DailyMeteo portal (https://app.dailymeteo.com/). Required for daily data
+        (``time_scale="day"`` with ``agg_level="agg"``), which is billed per returned day; monthly,
+        annual and long-term mean values are free.
     var
         ``"tmean"`` (mean temperature, °C), ``"tmax"``, ``"tmin"``, or ``"prcp"`` (total precipitation, mm).
     agg_level
@@ -69,14 +72,18 @@ def get_meteo(
     Returns
     -------
     pandas.DataFrame
-        Columns ``timestamp`` and ``value``.
+        Columns ``timestamp`` and ``value``. Locations without data (e.g. sea) give ``NaN``.
+        Long-term means (``agg_level="ltm"``) have timestamps like ``"1991-2020"``, ``"07.1991-2020"``
+        or ``"25.07.1991-2020"``.
     """
     _check("var", var, VARS)
     _check("agg_level", agg_level, AGG_LEVELS)
     _check("time_scale", time_scale, TIME_SCALES)
-    if not api_key:
-        raise ValueError("api_key is missing; get one from the DailyMeteo portal (https://app.dailymeteo.com/)")
-    params = {"var": var, "agg_level": agg_level, "time_scale": time_scale, "lat": lat, "lon": lon, "api_key": api_key}
+    if not api_key and time_scale == "day" and agg_level == "agg":
+        raise ValueError("daily data require api_key; get one from the DailyMeteo portal (https://app.dailymeteo.com/)")
+    params = {"var": var, "agg_level": agg_level, "time_scale": time_scale, "lat": lat, "lon": lon}
+    if api_key:
+        params["api_key"] = api_key
 
     if time is not None:
         times = [t.strip() for t in (time.split(",") if isinstance(time, str) else time) if str(t).strip()]
@@ -99,7 +106,9 @@ def get_meteo(
             frames.append(pd.DataFrame(data)[["timestamp", "value"]])
     if not frames:
         return pd.DataFrame(columns=["timestamp", "value"])
-    return pd.concat(frames, ignore_index=True)
+    df = pd.concat(frames, ignore_index=True)
+    df["value"] = df["value"].mask(df["value"] <= NODATA)
+    return df
 
 
 def get_coordinates(location_name: str = "Belgrade") -> tuple[float, float]:

@@ -71,3 +71,19 @@ def test_get_coordinates():
     p, _ = fake_session([Resp([])])
     with p, pytest.raises(LookupError):
         dm.get_coordinates("nowhere-xyz")
+
+
+def test_get_meteo_without_key_for_free_scales():
+    p, s = fake_session([Resp([{"timestamp": "2020", "value": 13.6}])])
+    with p:
+        df = dm.get_meteo(44.8, 20.46, time_scale="ann", time="2020")
+    assert df.value.tolist() == [13.6]
+    assert "api_key" not in s.get.call_args.kwargs["params"]
+    assert s.get.call_args.args[0].endswith("/meteo/v2/pq/")
+
+
+def test_get_meteo_nodata_is_nan():
+    p, _ = fake_session([Resp([{"timestamp": "2020", "value": -999.9}])])
+    with p:
+        df = dm.get_meteo(40, -35, time_scale="ann", time="2020")
+    assert df.value.isna().all()

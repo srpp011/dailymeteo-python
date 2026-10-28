@@ -2,7 +2,7 @@
 
 Python client for meteorological data from [DailyMeteo](https://app.dailymeteo.com/):
 
-- **`get_meteo`**: daily, monthly or annual values for a location, World, 1961 to the present, from the DailyMeteo API (API key required).
+- **`get_meteo`**: daily, monthly or annual values and long-term means for a location, World, 1961 to the present, from the DailyMeteo API. Monthly, annual and long-term mean values are free; daily data need an API key and are billed per returned day.
 - **`meteoeurope1km`**: download of the **MeteoEurope1km** gridded dataset from Zenodo. It covers Europe at 1 km for 1961–2020: TMAX, TMIN, TMEAN, PRCP and SLP, with aggregates and climate normals.
 
 It is the Python counterpart of `get_meteo`, `get_coordinates` and `get_meteoeurope1km` in the R package [meteo](https://cran.r-project.org/package=meteo). Spatial interpolation (RFSI, STRK) is available only in R.
@@ -19,15 +19,16 @@ pip install dailymeteo
 import dailymeteo as dm
 
 lat, lon = dm.get_coordinates("Belgrade")
-df = dm.get_meteo(lat, lon, api_key="...",   # API key from https://app.dailymeteo.com/
-                  var="tmean",                # "tmax", "tmin", "prcp"
-                  agg_level="agg",            # "ltm" for long-term means
-                  time_scale="day",           # "mon", "ann"
-                  start="2020-01-01", end="2020-01-31")
-# or time=["2020-01-01", "2020-01-15"]
+df = dm.get_meteo(lat, lon, var="tmean",     # "tmax", "tmin", "prcp"
+                  time_scale="mon",           # "ann"; "day" needs api_key="..." from https://app.dailymeteo.com/
+                  start="2020-01", end="2020-12")
+# or time=["2020-01", "2020-07"]
+
+# climate normals 1961-1990 and 1991-2020 for July
+dm.get_meteo(lat, lon, var="tmax", agg_level="ltm", time_scale="mon", time="07")
 ```
 
-The result is a `pandas.DataFrame` with columns `timestamp` and `value`.
+The result is a `pandas.DataFrame` with columns `timestamp` and `value`. Locations without data (e.g. sea) give `NaN`.
 
 ## MeteoEurope1km gridded dataset
 
