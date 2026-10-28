@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dailymeteo"
+dynamic = ["version"]
+description = "Meteorological data from the DailyMeteo API and the MeteoEurope1km gridded dataset (Europe, 1 km, 1961-2020)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "GPL-2.0-or-later"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Aleksandar Sekulić", email = "asekulic@grf.bg.ac.rs" },
+    { name = "Milan Kilibarda", email = "kili@grf.bg.ac.rs" },
+]
+maintainers = [{ name = "Srđan Popović" }]
+keywords = ["meteorology", "climate", "temperature", "precipitation", "gridded data", "Europe", "Zenodo"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+dependencies = ["requests>=2.28", "pandas>=1.5"]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.urls]
+"DailyMeteo" = "https://app.dailymeteo.com/"
+"MeteoEurope1km dataset" = "https://doi.org/10.5281/zenodo.23264155"
+"R package meteo" = "https://cran.r-project.org/package=meteo"
+
+[tool.hatch.version]
+path = "src/dailymeteo/__init__.py"
+
+[tool.pytest.ini_options]
+markers = ["network: tests that call Zenodo (deselect with -m 'not network')"]
