@@ -2,10 +2,14 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import pandas as pd
 
 from ._http import USER_AGENT, DailyMeteoError, session
+
+if TYPE_CHECKING:
+    from .account import Account
 
 API_URL = "https://api.dailymeteo.com/meteo/v2/pq/"
 NODATA = -999.9  # returned for locations without data (e.g. sea)
@@ -46,6 +50,7 @@ def get_meteo(
     time: str | Sequence[str] | None = None,
     start: str | None = None,
     end: str | None = None,
+    account: Account | None = None,
 ) -> pd.DataFrame:
     """Meteorological values for one location from the DailyMeteo API.
 
@@ -68,6 +73,8 @@ def get_meteo(
         A list or a comma-separated string. If given, ``start`` and ``end`` are ignored.
     start, end
         Date range (same format as ``time``), sent to the API as ``from`` and ``to``.
+    account
+        Signed-in :class:`dailymeteo.Account`; an alternative to ``api_key`` for daily data.
 
     Returns
     -------
@@ -79,8 +86,8 @@ def get_meteo(
     _check("var", var, VARS)
     _check("agg_level", agg_level, AGG_LEVELS)
     _check("time_scale", time_scale, TIME_SCALES)
-    if not api_key and time_scale == "day" and agg_level == "agg":
-        raise ValueError("daily data require api_key; get one from the DailyMeteo portal (https://app.dailymeteo.com/)")
+    if not (api_key or account) and time_scale == "day" and agg_level == "agg":
+        raise ValueError("daily data require api_key or account; get a key from the DailyMeteo portal (https://app.dailymeteo.com/)")
     params = {"var": var, "agg_level": agg_level, "time_scale": time_scale, "lat": lat, "lon": lon}
     if api_key:
         params["api_key"] = api_key
@@ -98,7 +105,7 @@ def get_meteo(
     frames = []
     s = session()
     for p in requests_params:
-        r = s.get(API_URL, params=p, timeout=120)
+        r = s.get(API_URL, params=p, headers=account.headers() if account and not api_key else None, timeout=300)
         if not r.ok:
             raise DailyMeteoError(f"DailyMeteo API returned {r.status_code}: {r.text[:300]}")
         data = r.json()

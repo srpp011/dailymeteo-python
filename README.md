@@ -30,6 +30,18 @@ dm.get_meteo(lat, lon, var="tmax", agg_level="ltm", time_scale="mon", time="07")
 
 The result is a `pandas.DataFrame` with columns `timestamp` and `value`. Locations without data (e.g. sea) give `NaN`.
 
+## Account: credits, point history, area downloads
+
+```python
+acc = dm.Account("you@example.com", "password")   # or DAILYMETEO_EMAIL / DAILYMETEO_PASSWORD
+acc.credits()                                      # plan, API credits, bulk credits
+dm.get_meteo(lat, lon, var="tmax", time_scale="day", start="2020-07-01", end="2020-07-31", account=acc)
+acc.bulk_download(lat, lon)                        # every variable, daily, whole record; CSV by email (1 bulk credit)
+area = "POLYGON((20.0 44.0,20.3 44.0,20.3 44.3,20.0 44.3,20.0 44.0))"
+acc.estimate_area(area, ["tmax", "prcp"], "2020-07-01", "2020-07-31")   # cost in credits
+acc.area_download(area, ["tmax", "prcp"], "2020-07-01", "2020-07-31")   # clipped GeoTIFFs by email (max 3,000 km²)
+```
+
 ## MeteoEurope1km gridded dataset
 
 ```python
