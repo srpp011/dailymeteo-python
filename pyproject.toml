@@ -10,11 +10,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = "GPL-2.0-or-later"
 license-files = ["LICENSE"]
-authors = [
-    { name = "Aleksandar Sekulić", email = "asekulic@grf.bg.ac.rs" },
-    { name = "Milan Kilibarda", email = "kili@grf.bg.ac.rs" },
-]
-maintainers = [{ name = "Srđan Popović" }]
+authors = [{ name = "Srđan Popović" }]
 keywords = ["meteorology", "climate", "temperature", "precipitation", "gridded data", "Europe", "Zenodo"]
 classifiers = [
     "Development Status :: 4 - Beta",

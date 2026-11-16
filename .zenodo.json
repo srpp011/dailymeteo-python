@@ -3,16 +3,34 @@
   "title": "dailymeteo: Python client for the DailyMeteo API and the MeteoEurope1km dataset",
   "description": "<p><strong>dailymeteo</strong> is a Python package for daily gridded meteorological data at a 1-km spatial resolution. It retrieves point time series (maximum, minimum and mean air temperature and precipitation; daily, monthly, annual values and long-term means) from the DailyMeteo API for Europe, Asia, Africa, North and South America and Oceania, and it lists, downloads and verifies the files of the MeteoEurope1km dataset (Europe, 1961&ndash;2020) published on Zenodo.</p><p>Installation: <code>pip install dailymeteo</code>. Source code and documentation: <a href=\"https://github.com/srpp011/dailymeteo-python\">github.com/srpp011/dailymeteo-python</a>.</p>",
   "creators": [
-    {"name": "Sekulić, Aleksandar", "affiliation": "GILAB DOO Beograd", "orcid": "0000-0002-5515-2779"},
-    {"name": "Kilibarda, Milan", "affiliation": "GILAB DOO Beograd", "orcid": "0000-0002-2930-3596"}
-  ],
-  "contributors": [
-    {"name": "Popović, Srdjan", "affiliation": "GILAB DOO Beograd", "type": "ContactPerson", "orcid": "0009-0008-2894-8764"}
+    {
+      "name": "Popović, Srdjan",
+      "affiliation": "GILAB DOO Beograd",
+      "orcid": "0009-0008-2894-8764"
+    }
   ],
   "license": "gpl-2.0-or-later",
-  "keywords": ["meteorology", "climate", "daily meteorological data", "gridded data", "MeteoEurope1km", "DailyMeteo", "Python"],
+  "keywords": [
+    "meteorology",
+    "climate",
+    "daily meteorological data",
+    "gridded data",
+    "MeteoEurope1km",
+    "DailyMeteo",
+    "Python"
+  ],
   "related_identifiers": [
-    {"identifier": "10.5281/zenodo.23264155", "relation": "isSupplementTo", "resource_type": "dataset", "scheme": "doi"},
-    {"identifier": "https://pypi.org/project/dailymeteo/", "relation": "isIdenticalTo", "resource_type": "software", "scheme": "url"}
+    {
+      "identifier": "10.5281/zenodo.23264155",
+      "relation": "isSupplementTo",
+      "resource_type": "dataset",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://pypi.org/project/dailymeteo/",
+      "relation": "isIdenticalTo",
+      "resource_type": "software",
+      "scheme": "url"
+    }
   ]
 }
